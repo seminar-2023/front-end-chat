@@ -3,6 +3,11 @@ import Home from '@/views/Home.vue'
 
 const routes = [
 	{
+		name: 'Home',
+		path: '/',
+		component: Home
+	},
+	{
 		name: 'Chat',
 		path: '/',
 		component: () => import('@/views/Chat.vue')
