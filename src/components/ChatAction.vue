@@ -43,17 +43,6 @@ const newChat = () => {
 			emits('newChat')
 			textField.value = ''
 		}, 500)
-		setTimeout(() => {
-			chats.addingNewChat({
-				text: 'hola',
-				left: true,
-				id: paramsId.value
-			})
-
-			contacts.setLastMessage('hola', 2)
-			emits('newChat')
-			textField.value = ''
-		}, 500)
 	}
 
 } 
