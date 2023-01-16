@@ -4,8 +4,8 @@
 			<span class="name mt-5">Bienvenido</span>
 			<div class="camera-box justify-content-center align-items-center mt-5">
 				<div v-if="isCameraOpen" v-show="!isLoading">
-					<video v-show="!isPhotoTaken" ref="camera" :width="450" :height="337.5" autoplay></video>
-					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="337" :height="550"></canvas>
+					<video v-show="!isPhotoTaken" ref="camera" :width="320" :height="240" autoplay></video>
+					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="320" :height="240"></canvas>
 				</div>
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
 					<button type="button pb-10 primary" @click="takePhoto">
@@ -105,7 +105,7 @@ export default {
 			this.isPhotoTaken = !this.isPhotoTaken;
 
 			const context = this.$refs.canvas.getContext('2d');
-			context.drawImage(this.$refs.camera, 0, 0, 450, 337.5);
+			context.drawImage(this.$refs.camera, 0, 0, 320, 240);
 		},
 
 		downloadImage() {
