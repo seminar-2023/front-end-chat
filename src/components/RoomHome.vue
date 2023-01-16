@@ -7,6 +7,8 @@
 					<video v-show="!isPhotoTaken" ref="camera" :width="320" :height="240" autoplay></video>
 					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="320" :height="240"></canvas>
 				</div>
+				height:{{ height }}
+				width:{{ width }}
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
 					<button type="button pb-10 primary" @click="takePhoto">
 						<span v-show="!isPhotoTaken" class="name mt-3">Identificate</span>
@@ -32,7 +34,9 @@ export default {
 			isPhotoTaken: false,
 			isShotPhoto: false,
 			isLoading: false,
-			link: '#'
+			link: '#',
+			height: null,
+			width: null
 		}
 	},
 	props: {
@@ -42,6 +46,8 @@ export default {
 	},
 	mounted() {
 		this.toggleCamera()
+		this.width = window.innerWidth
+		this.height = window.innerHeight
 	},
 
 	methods: {
