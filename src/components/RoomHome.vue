@@ -5,7 +5,7 @@
 			<div class="camera-box justify-content-center align-items-center mt-5">
 				<div v-if="isCameraOpen" v-show="!isLoading">
 					<video v-show="!isPhotoTaken" ref="camera" :width="450" :height="337.5" autoplay></video>
-					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="450" :height="337.5"></canvas>
+					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="337" :height="550"></canvas>
 				</div>
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
 					<button type="button pb-10 primary" @click="takePhoto">
