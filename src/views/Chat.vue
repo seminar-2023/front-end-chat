@@ -14,13 +14,6 @@
 					</div>
 				</div>
 			</template>
-
-			<template v-slot:end>
-				<div class="text-xl">
-					<i class="active:scale-90 duration-300 fa fa-phone mr-5"></i>
-					<i class="active:scale-90 duration-300 fa fa-video"></i>
-				</div>
-			</template>
 		</Header>
 
 		<RoomChat />
@@ -31,35 +24,35 @@
 
 <script setup>
 
-	import { useRoute, useRouter } from 'vue-router'
-	import { computed, ref, onMounted } from 'vue'
-	import { useContacts } from '@/stores/contacts'
-	import Header from '@/components/Header.vue'
-	import ChatAction from '@/components/ChatAction.vue'
-	import RoomChat from '@/components/RoomChat.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, ref, onMounted } from 'vue'
+import { useContacts } from '@/stores/contacts'
+import Header from '@/components/Header.vue'
+import ChatAction from '@/components/ChatAction.vue'
+import RoomChat from '@/components/RoomChat.vue'
 
-	const router = useRouter()
-	const route = useRoute()
-	const container = ref(null)
-	const state = useContacts()
+const router = useRouter()
+const route = useRoute()
+const container = ref(null)
+const state = useContacts()
 
-	const paramsId = computed(() => route.params.id)
-	const profile = state.contacts.filter( e => e.id == paramsId.value )
+const paramsId = computed(() => route.params.id)
+const profile = state.contacts.filter(e => e.id == paramsId.value)
 
-	const back = () => {
-		setTimeout(() => {
-			router.go(-1)
-		}, 500)
-	}
-	
-	onMounted(() => scrollToBottom())
+const back = () => {
+	setTimeout(() => {
+		router.go(-1)
+	}, 500)
+}
 
-	const scrollToBottom = () => {
-		let el = container.value
-		el.scrollIntoView(false, {
-		  behavior: 'smooth',
-		  block: 'end'
-		})
-	}
-	
+onMounted(() => scrollToBottom())
+
+const scrollToBottom = () => {
+	let el = container.value
+	el.scrollIntoView(false, {
+		behavior: 'smooth',
+		block: 'end'
+	})
+}
+
 </script>

@@ -7,12 +7,12 @@
 </template>
 
 <script setup>
-
-	import Contact from '@/components/Contact.vue'
-	const props = defineProps({
-		contacts: {
-			type: Array
-		}
-	})
+import RoomChat from '@/components/RoomHome.vue'
+import Contact from '@/components/Contact.vue'
+const props = defineProps({
+	contacts: {
+		type: Array
+	}
+})
 
 </script>
