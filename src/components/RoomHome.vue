@@ -113,7 +113,7 @@ export default {
 			const context = this.$refs.canvas.getContext('2d');
 			console.log(window.innerWidth);
 			console.log(window.innerHeight);
-			if (window.innerHeight === 1180) {
+			if (window.innerHeight === 1061) {
 				context.drawImage(this.$refs.camera, 0, 0, 320, 550);
 			} else {
 				context.drawImage(this.$refs.camera, 0, 0, 320, 240);
