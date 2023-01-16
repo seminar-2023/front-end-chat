@@ -4,11 +4,9 @@
 			<span class="name mt-5">Bienvenido</span>
 			<div class="camera-box justify-content-center align-items-center mt-5">
 				<div v-if="isCameraOpen" v-show="!isLoading">
-					<video v-show="!isPhotoTaken" ref="camera" :width="320" :height="240" autoplay></video>
-					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="320" :height="240"></canvas>
+					<video v-show="!isPhotoTaken" ref="camera" :width="height" :height="width" autoplay></video>
+					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="height" :height="width"></canvas>
 				</div>
-				height:{{ height }}
-				width:{{ width }}
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
 					<button type="button pb-10 primary" @click="takePhoto">
 						<span v-show="!isPhotoTaken" class="name mt-3">Identificate</span>
@@ -35,8 +33,8 @@ export default {
 			isShotPhoto: false,
 			isLoading: false,
 			link: '#',
-			height: null,
-			width: null
+			height: 320,
+			width: 240
 		}
 	},
 	props: {
@@ -46,8 +44,9 @@ export default {
 	},
 	mounted() {
 		this.toggleCamera()
-		this.width = window.innerWidth
-		this.height = window.innerHeight
+		if (window.innerHeight <= 1061) {
+			this.height = 500
+		}
 	},
 
 	methods: {
@@ -111,8 +110,6 @@ export default {
 			this.isPhotoTaken = !this.isPhotoTaken;
 
 			const context = this.$refs.canvas.getContext('2d');
-			console.log(window.innerWidth);
-			console.log(window.innerHeight);
 			context.drawImage(this.$refs.camera, 0, 0, 320, 240);
 		},
 
