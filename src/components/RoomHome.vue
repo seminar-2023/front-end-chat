@@ -105,7 +105,13 @@ export default {
 			this.isPhotoTaken = !this.isPhotoTaken;
 
 			const context = this.$refs.canvas.getContext('2d');
-			context.drawImage(this.$refs.camera, 0, 0, 320, 240);
+			console.log(window.innerWidth);
+			console.log(window.innerHeight);
+			if (window.innerHeight === 1180) {
+				context.drawImage(this.$refs.camera, 0, 0, 320, 550);
+			} else {
+				context.drawImage(this.$refs.camera, 0, 0, 320, 240);
+			}
 		},
 
 		downloadImage() {
