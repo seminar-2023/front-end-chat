@@ -1,5 +1,5 @@
 <template>
-	<main class="w-full py-5 pt-20 pb-20">
+	<main class="w-full py-5 pb-20">
 		<BallonChat text="Hola buen dia, por favor escriba o dicte lo que quiere preguntar" :left="true" />
 		<template v-for="(chat, x) in chats" :key="x">
 			<BallonChat :text="chat.text" :left="chat.left" />
