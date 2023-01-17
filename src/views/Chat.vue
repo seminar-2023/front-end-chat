@@ -17,8 +17,6 @@
 		</Header>
 
 		<RoomChat />
-
-		<ChatAction v-on:newChat="scrollToBottom" />
 	</main>
 </template>
 

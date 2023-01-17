@@ -4,8 +4,8 @@
 			<span class="name mt-5">Bienvenido</span>
 			<div class="camera-box justify-content-center align-items-center mt-5">
 				<div v-if="isCameraOpen" v-show="!isLoading">
-					<video v-show="!isPhotoTaken" ref="camera" :width="height" :height="width" autoplay></video>
-					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="height" :height="width"></canvas>
+					<video v-show="!isPhotoTaken" ref="camera" :width="320" :height="240" autoplay></video>
+					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="320" :height="240"></canvas>
 				</div>
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
 					<button type="button pb-10 primary" @click="takePhoto">
@@ -25,6 +25,8 @@
 
 import { useRouter } from 'vue-router'
 import { useContacts } from '@/stores/contacts'
+import recognizer from '@/common/face-recognizer'
+
 export default {
 	data() {
 		return {
@@ -33,8 +35,8 @@ export default {
 			isShotPhoto: false,
 			isLoading: false,
 			link: '#',
-			height: 320,
-			width: 240
+			height: 450,
+			width: 337
 		}
 	},
 	props: {
@@ -44,9 +46,6 @@ export default {
 	},
 	mounted() {
 		this.toggleCamera()
-		if (window.innerHeight <= 1061) {
-			this.height = 500
-		}
 	},
 
 	methods: {
@@ -108,16 +107,18 @@ export default {
 			}
 
 			this.isPhotoTaken = !this.isPhotoTaken;
-
 			const context = this.$refs.canvas.getContext('2d');
 			context.drawImage(this.$refs.camera, 0, 0, 320, 240);
+			this.downloadImage()
 		},
 
 		downloadImage() {
-			const download = document.getElementById("downloadPhoto");
+			//const download = document.getElementById("downloadPhoto");
 			const canvas = document.getElementById("photoTaken").toDataURL("image/jpeg")
 				.replace("image/jpeg", "image/octet-stream");
-			download.setAttribute("href", canvas);
+			console.log(canvas)
+			recognizer.faceRecognition(canvas)
+			//download.setAttribute("href", canvas);
 		}
 	}
 }

@@ -39,6 +39,7 @@
 - Vercell
 - Termux
 - Micro Text Editor
+-node 14.18.1
 
 ### How to install
 <br>

@@ -1,22 +1,133 @@
 <template>
 	<main class="w-full py-5 pb-20">
-		<BallonChat text="Hola buen dia, por favor escriba o dicte lo que quiere preguntar" :left="true" />
 		<template v-for="(chat, x) in chats" :key="x">
 			<BallonChat :text="chat.text" :left="chat.left" />
 		</template>
 	</main>
+	<main class="fixed bottom-0 left-0 right-0">
+		<section class="bg-primary items-center p-5 px-5 flex justify-evenly">
+			<div class="w-10/12 text-gray-100 bg-secondary px-3 py-1 flex items-center rounded-xl">
+				<textarea rows="2" v-model="textField" type="text" placeholder="Your message"
+					class="bg-secondary w-full px-2 py-1 rounded-xl"></textarea>
+			</div>
+			<span>
+				<i @click="newChat" class="active:scale-90 duration-300 fa fa-paper-plane text-indigo-600 text-3xl"></i>
+
+				<i v-show="!muted" @click="changemuted"
+					class="pl-3 active:scale-90 duration-300 fa fa-volume-mute text-indigo-600 text-3xl"></i>
+
+				<i v-show="muted" @click="changemuted"
+					class="pl-3 active:scale-90 duration-300 fa fa-volume-up text-indigo-600 text-3xl"></i>
+			</span>
+		</section>
+	</main>
 </template>
 
-<script setup>
-import { useRoute } from 'vue-router'
-import { computed } from 'vue'
-import { useChats } from '@/stores/chats'
+<script>
+import { chatsState } from '@/common/chat'
 import BallonChat from '@/components/BallonChat.vue'
+export default {
+	data() {
+		return {
+			textField: '',
+			muted: false,
+			isLoading: true,
+			name: '',
+			selectedVoice: 148,
+			synth: window.speechSynthesis,
+			voiceList: [],
+			greetingSpeech: new window.SpeechSynthesisUtterance(),
+			chats: []
+		}
+	},
+	components: {
+		BallonChat
+	},
+	computed: {
+	},
 
-const state = useChats()
-const route = useRoute()
+	mounted() {
+		this.chats.push({
+			text: 'Hola buen dia, por favor escriba o dicte lo que quiere preguntar',
+			left: true,
+			id: 1
+		})
+		this.voiceList = this.synth.getVoices()
 
-const paramsId = computed(() => route.params.id)
-const chats = computed(() => state.chats.filter(chat => chat.id == paramsId.value))
+		if (this.voiceList.length) {
+			this.isLoading = false
+		}
 
+		this.synth.onvoiceschanged = () => {
+			this.voiceList = this.synth.getVoices()
+
+		}
+
+		this.listenForSpeechEvents()
+		setTimeout(() => {
+			this.greet('Hola buen dia, por favor escriba o dicte lo que quiere preguntar')
+		}, 500);
+	},
+
+	methods: {
+
+		changemuted() {
+			this.muted = !this.muted
+			console.log(this.muted)
+		},
+		listenForSpeechEvents() {
+			this.greetingSpeech.onstart = () => {
+				this.isLoading = true
+			}
+
+			this.greetingSpeech.onend = () => {
+				this.isLoading = false
+			}
+		},
+		greet(payload) {
+			// it should be 'craic', but it doesn't sound right
+			if (!this.muted) {
+				this.greetingSpeech.text = payload
+				this.greetingSpeech.voice = this.voiceList[this.selectedVoice]
+				this.synth.speak(this.greetingSpeech)
+			}
+		},
+		newChat() {
+			if (this.textField.length > 0) {
+				setTimeout(async () => {
+					this.chats.push({
+						text: this.textField,
+						left: false,
+						id: 1
+					})
+					const result = await fetch('https://pro-equinox-374617.uc.r.appspot.com/v1/ask?question=' + this.textField, {
+						method: 'GET',
+					})
+						.then(function (response) {
+							if (response.status != 200) {
+								throw response.status;
+							} else {
+								return response.json();
+							}
+						});
+					this.chats.push({
+						text: result.detail.answer,
+						left: true,
+						id: 1
+					})
+					if (!this.muted) {
+						this.greetingSpeech.text = `${result.detail.answer}`
+
+						this.greetingSpeech.voice = this.voiceList[this.selectedVoice]
+
+						this.synth.speak(this.greetingSpeech)
+					}
+
+					this.textField = ''
+				}, 500)
+
+			}
+		}
+	}
+}
 </script>
