@@ -80,7 +80,13 @@ export default {
 	},
 	methods: {
 		async initModel() {
-			await faceapi.loadFaceRecognitionModel("/models");
+			Promise.all([
+				await faceapi.loadFaceRecognitionModel("/models")]).then((val) => {
+					// console here gives an array of undefined
+					console.log(val)
+				}).catch((err) => {
+					console.log(err)
+				})
 		},
 		openChat(payload) {
 			setTimeout(() => {
