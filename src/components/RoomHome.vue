@@ -165,6 +165,7 @@ export default {
 			Promise.all([distance = faceapi
 				.euclideanDistance(desc[0], desc[1])
 				.toFixed(2)])
+			console.log(distance)
 			if (distance < this.umbral) {
 				return this.contacts[item]
 			}
