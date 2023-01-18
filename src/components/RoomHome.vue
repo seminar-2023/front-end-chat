@@ -30,7 +30,6 @@
 </template>
 <script>
 import * as faceapi from "face-api.js";
-import { defineCustomElement } from "vue";
 export default {
 
 	data() {
@@ -80,8 +79,11 @@ export default {
 	},
 	methods: {
 		async initModel() {
+			const MODEL_URL = '/models'
+			console.log(MODEL_URL)
+			//https://chat-interactivo.netlify.app
 			Promise.all([
-				await faceapi.loadFaceRecognitionModel("/models")]).then((val) => {
+				await faceapi.loadFaceRecognitionModel('https://chat-interactivo.netlify.app/models')]).then((val) => {
 					// console here gives an array of undefined
 					console.log(val)
 				}).catch((err) => {

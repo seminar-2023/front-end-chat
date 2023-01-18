@@ -51,7 +51,7 @@ export default {
 	},
 
 	mounted() {
-		console.log(this.user)
+
 		setTimeout(async () => {
 			this.initialchat(this.user)
 		}, 500)
@@ -68,36 +68,39 @@ export default {
 
 	methods: {
 		async initialchat(payload) {
-			if (payload.idUser === 0) {
+			if (payload.idUser == 0) {
+				console.log('a')
 				this.chats.push({
 					text: 'Hola buen dia, por favor escriba o dicte lo que quiere preguntar',
 					left: true,
 					id: 1
 				})
+				this.greet('Hola buen dia, por favor escriba o dicte lo que quiere preguntar')
 			} else {
+				console.log('b')
 				this.chats.push({
 					text: `Hola buen dia ${payload.name} te vamos a enviar una recopilación de información`,
 					left: true,
 					id: 1
 				})
+				this.greet(this.chats[0].text)
+				const result = await fetch('https://pro-equinox-374617.uc.r.appspot.com/v1/user/' + 1, {
+					method: 'GET',
+				})
+					.then(function (response) {
+						if (response.status != 200) {
+							throw response.status;
+						} else {
+							return response.json();
+						}
+					});
+				this.greet(result.detail.dateResume)
+				this.chats.push({
+					text: result.detail.dateResume,
+					left: true,
+					id: 1
+				})
 			}
-			this.greet(this.chats[0].text)
-			const result = await fetch('https://pro-equinox-374617.uc.r.appspot.com/v1/user/' + 1, {
-				method: 'GET',
-			})
-				.then(function (response) {
-					if (response.status != 200) {
-						throw response.status;
-					} else {
-						return response.json();
-					}
-				});
-			this.greet(result.detail.dateResume)
-			this.chats.push({
-				text: result.detail.dateResume,
-				left: true,
-				id: 1
-			})
 			console.log(result)
 		},
 		changemuted() {
