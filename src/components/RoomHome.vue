@@ -8,35 +8,63 @@
 					<canvas v-show="isPhotoTaken" id="photoTaken" ref="canvas" :width="320" :height="240"></canvas>
 				</div>
 				<div v-if="isCameraOpen && !isLoading" class="camera-shoot pt-10">
-					<button type="button pb-10 primary" @click="takePhoto">
-						<span v-show="!isPhotoTaken" class="name mt-3">Identificate</span>
-						<span v-show="isPhotoTaken" class="name mt-3">Volver a identificarte</span>
+					<button v-show="!isPhotoTaken" type="button pb-10 primary" @click="takePhoto">
+						<span class="name mt-3">Identificate</span>
+					</button>
+					<button v-show="isPhotoTaken" type="button pb-10 primary" @click="takePhoto">
+						<span class="name mt-3">Volver a identificarte</span>
 					</button>
 					<br />
-					<button type="button-ask pt-10" @click="openChat">
+					<button type="button-ask pt-10" @click="openChat({ id: 0, name: '' })">
 						<span class="name mt-3">Preguntar</span>
 					</button>
+				</div>
+				<div v-show="false">
+					<img id="orgImg" :src="img1" />
+					<br />
+					<img id="detImg" :src="img2" />
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
-
-import { useRouter } from 'vue-router'
-import { useContacts } from '@/stores/contacts'
-import recognizer from '@/common/face-recognizer'
-
+import * as faceapi from "face-api.js";
+import { defineCustomElement } from "vue";
 export default {
+
 	data() {
 		return {
+			distance: 0,
+			desc: [],
+			orgImgEl: null,
+			detImgEl: null,
+			img1: '',
+			img2: '',
 			isCameraOpen: false,
 			isPhotoTaken: false,
 			isShotPhoto: false,
 			isLoading: false,
 			link: '#',
 			height: 450,
-			width: 337
+			width: 337,
+			umbral: 0.50,
+			contacts: [
+				{
+					id: 1,
+					name: 'Daniel Solano',
+					url: '/img/daniel/daniel2.jpeg'
+				}, {
+					id: 2,
+					name: 'Michelle Penna',
+					url: '/img/michelle/michelle3.jpeg'
+				},
+				{
+					id: 3,
+					name: 'Mateo Ceballos',
+					url: '/img/mateo/mateo3.jpeg'
+				},
+			]
 		}
 	},
 	props: {
@@ -46,12 +74,17 @@ export default {
 	},
 	mounted() {
 		this.toggleCamera()
+		this.$nextTick(() => {
+			this.initModel()
+		});
 	},
-
 	methods: {
-		openChat() {
+		async initModel() {
+			await faceapi.loadFaceRecognitionModel("/models");
+		},
+		openChat(payload) {
 			setTimeout(() => {
-				this.$router.push({ name: 'Chat', params: { id: this.contact.id } })
+				this.$router.push({ name: 'Chat', params: { id: this.contact.id, idUser: payload.id, name: payload.name } })
 			}, 500)
 		},
 		toggleCamera() {
@@ -95,7 +128,7 @@ export default {
 			});
 		},
 
-		takePhoto() {
+		async takePhoto() {
 			if (!this.isPhotoTaken) {
 				this.isShotPhoto = true;
 
@@ -109,16 +142,33 @@ export default {
 			this.isPhotoTaken = !this.isPhotoTaken;
 			const context = this.$refs.canvas.getContext('2d');
 			context.drawImage(this.$refs.camera, 0, 0, 320, 240);
-			this.downloadImage()
+			await this.comparation()
 		},
-
-		downloadImage() {
-			//const download = document.getElementById("downloadPhoto");
-			const canvas = document.getElementById("photoTaken").toDataURL("image/jpeg")
-				.replace("image/jpeg", "image/octet-stream");
-			console.log(canvas)
-			recognizer.faceRecognition(canvas)
-			//download.setAttribute("href", canvas);
+		async comparation() {
+			let userfind
+			for (let index = 0; index < this.contacts.length; index++) {
+				userfind = await this.faceRecognition(document.getElementById("photoTaken"), index)
+			}
+			if (userfind != null) {
+				this.openChat(userfind)
+			}
+		},
+		async faceRecognition(currentImg, item) {
+			let distance
+			let desc
+			let detImgEl = document.getElementById("detImg");
+			this.img2 = this.contacts[item].url
+			desc = [
+				await faceapi.computeFaceDescriptor(currentImg),
+				await faceapi.computeFaceDescriptor(detImgEl),
+			];
+			distance = faceapi
+				.euclideanDistance(desc[0], desc[1])
+				.toFixed(2);
+			if (distance < this.umbral) {
+				return this.contacts[item]
+			}
+			return null
 		}
 	}
 }

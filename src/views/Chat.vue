@@ -16,7 +16,7 @@
 			</template>
 		</Header>
 
-		<RoomChat />
+		<RoomChat :user="route.params"/>
 	</main>
 </template>
 

@@ -10,21 +10,22 @@
 				<textarea rows="2" v-model="textField" type="text" placeholder="Your message"
 					class="bg-secondary w-full px-2 py-1 rounded-xl"></textarea>
 			</div>
-			<span>
+			<span style="
+    width: 20px;
+">
 				<i @click="newChat" class="active:scale-90 duration-300 fa fa-paper-plane text-indigo-600 text-3xl"></i>
 
 				<i v-show="!muted" @click="changemuted"
-					class="pl-3 active:scale-90 duration-300 fa fa-volume-mute text-indigo-600 text-3xl"></i>
+					class="active:scale-90 duration-300 fa fa-volume-mute text-indigo-600 text-3xl"></i>
 
 				<i v-show="muted" @click="changemuted"
-					class="pl-3 active:scale-90 duration-300 fa fa-volume-up text-indigo-600 text-3xl"></i>
+					class="active:scale-90 duration-300 fa fa-volume-up text-indigo-600 text-3xl"></i>
 			</span>
 		</section>
 	</main>
 </template>
 
 <script>
-import { chatsState } from '@/common/chat'
 import BallonChat from '@/components/BallonChat.vue'
 export default {
 	data() {
@@ -40,6 +41,9 @@ export default {
 			chats: []
 		}
 	},
+	props: {
+		user: { type: Object }
+	},
 	components: {
 		BallonChat
 	},
@@ -47,30 +51,55 @@ export default {
 	},
 
 	mounted() {
-		this.chats.push({
-			text: 'Hola buen dia, por favor escriba o dicte lo que quiere preguntar',
-			left: true,
-			id: 1
-		})
+		console.log(this.user)
+		setTimeout(async () => {
+			this.initialchat(this.user)
+		}, 500)
 		this.voiceList = this.synth.getVoices()
-
 		if (this.voiceList.length) {
 			this.isLoading = false
 		}
-
 		this.synth.onvoiceschanged = () => {
 			this.voiceList = this.synth.getVoices()
-
 		}
-
 		this.listenForSpeechEvents()
-		setTimeout(() => {
-			this.greet('Hola buen dia, por favor escriba o dicte lo que quiere preguntar')
-		}, 500);
+
 	},
 
 	methods: {
-
+		async initialchat(payload) {
+			if (payload.idUser === 0) {
+				this.chats.push({
+					text: 'Hola buen dia, por favor escriba o dicte lo que quiere preguntar',
+					left: true,
+					id: 1
+				})
+			} else {
+				this.chats.push({
+					text: `Hola buen dia ${payload.name} te vamos a enviar una recopilación de información`,
+					left: true,
+					id: 1
+				})
+			}
+			this.greet(this.chats[0].text)
+			const result = await fetch('https://pro-equinox-374617.uc.r.appspot.com/v1/user/' + 1, {
+				method: 'GET',
+			})
+				.then(function (response) {
+					if (response.status != 200) {
+						throw response.status;
+					} else {
+						return response.json();
+					}
+				});
+			this.greet(result.detail.dateResume)
+			this.chats.push({
+				text: result.detail.dateResume,
+				left: true,
+				id: 1
+			})
+			console.log(result)
+		},
 		changemuted() {
 			this.muted = !this.muted
 			console.log(this.muted)
@@ -85,7 +114,6 @@ export default {
 			}
 		},
 		greet(payload) {
-			// it should be 'craic', but it doesn't sound right
 			if (!this.muted) {
 				this.greetingSpeech.text = payload
 				this.greetingSpeech.voice = this.voiceList[this.selectedVoice]
