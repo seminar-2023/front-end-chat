@@ -11,7 +11,7 @@
 					<button v-show="!isPhotoTaken" type="button pb-10 primary" @click="takePhoto">
 						<span class="name mt-3">Identificate</span>
 					</button>
-					<button v-show="isPhotoTaken" type="button pb-10 primary" @click="takePhoto">
+					<button v-show="isPhotoTaken" type="button pb-10 primary" @click="isPhotoTaken = !isPhotoTaken">
 						<span class="name mt-3">Volver a identificarte</span>
 					</button>
 					<br />
@@ -54,15 +54,15 @@ export default {
 					name: 'Daniel Solano',
 					url: '/img/daniel/daniel2.jpeg'
 				}, {
+					id: 3,
+					name: 'Mateo Ceballos',
+					url: '/img/mateo/mateo3.jpeg'
+				}, {
 					id: 2,
 					name: 'Michelle Penna',
 					url: '/img/michelle/michelle3.jpeg'
 				},
-				{
-					id: 3,
-					name: 'Mateo Ceballos',
-					url: '/img/mateo/mateo3.jpeg'
-				},
+
 			]
 		}
 	},
@@ -79,16 +79,8 @@ export default {
 	},
 	methods: {
 		async initModel() {
-			const MODEL_URL = '/models'
-			console.log(MODEL_URL)
 			//https://chat-interactivo.netlify.app
-			Promise.all([
-				await faceapi.loadFaceRecognitionModel('https://chat-interactivo.netlify.app/models')]).then((val) => {
-					// console here gives an array of undefined
-					console.log(val)
-				}).catch((err) => {
-					console.log(err)
-				})
+			await faceapi.loadFaceRecognitionModel('https://chat-interactivo.netlify.app/models')
 		},
 		openChat(payload) {
 			setTimeout(() => {
@@ -156,10 +148,13 @@ export default {
 			let userfind
 			for (let index = 0; index < this.contacts.length; index++) {
 				userfind = await this.faceRecognition(document.getElementById("photoTaken"), index)
+				const { dist, user } = userfind
+				if (userfind != null && this.umbral >= dist) {
+					console.log('user find', user)
+					this.openChat(user)
+				}
 			}
-			if (userfind != null) {
-				this.openChat(userfind)
-			}
+
 		},
 		async faceRecognition(currentImg, item) {
 			let distance
@@ -173,11 +168,8 @@ export default {
 			Promise.all([distance = faceapi
 				.euclideanDistance(desc[0], desc[1])
 				.toFixed(2)])
-			console.log(distance)
-			if (distance < this.umbral) {
-				return this.contacts[item]
-			}
-			return null
+			console.log(distance, this.contacts[item].name)
+			return { dist: distance, user: this.contacts[item] }
 		}
 	}
 }
