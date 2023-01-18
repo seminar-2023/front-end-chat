@@ -158,13 +158,13 @@ export default {
 			let desc
 			let detImgEl = document.getElementById("detImg");
 			this.img2 = this.contacts[item].url
-			desc = [
+			Promise.all([desc = [
 				await faceapi.computeFaceDescriptor(currentImg),
 				await faceapi.computeFaceDescriptor(detImgEl),
-			];
-			distance = faceapi
+			]])
+			Promise.all([distance = faceapi
 				.euclideanDistance(desc[0], desc[1])
-				.toFixed(2);
+				.toFixed(2)])
 			if (distance < this.umbral) {
 				return this.contacts[item]
 			}
