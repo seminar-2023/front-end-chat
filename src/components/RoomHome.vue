@@ -47,20 +47,12 @@ export default {
 			link: '#',
 			height: 450,
 			width: 337,
-			umbral: 0.50,
+			umbral: 0.60,
 			contacts: [
 				{
-					id: 1,
-					name: 'Daniel Solano',
-					url: '/img/daniel/daniel2.jpeg'
-				}, {
 					id: 3,
 					name: 'Mateo Ceballos',
 					url: '/img/mateo/mateo3.jpeg'
-				}, {
-					id: 2,
-					name: 'Michelle Penna',
-					url: '/img/michelle/michelle3.jpeg'
 				},
 
 			]
