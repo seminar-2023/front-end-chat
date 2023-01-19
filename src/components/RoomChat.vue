@@ -10,16 +10,20 @@
 				<textarea rows="2" v-model="textField" type="text" placeholder="Escriba su mensaje"
 					class="bg-secondary w-full px-2 py-1 rounded-xl"></textarea>
 			</div>
-			<span style="
-    width: 20px;
-">
-				<i @click="newChat" class="active:scale-90 duration-300 fa fa-paper-plane text-indigo-600 text-3xl"></i>
+			<span class="justify-between ">
+				<i @click="newChat" class="pr-2 active:scale-90 duration-300 fa fa-paper-plane text-indigo-600 text-3xl"></i>
 
 				<i v-show="!muted" @click="changemuted"
-					class="active:scale-90 duration-300 fa fa-volume-mute text-indigo-600 text-3xl"></i>
+					class="pr-2 active:scale-90 duration-300 fa fa-volume-up  text-indigo-600 text-3xl"></i>
 
 				<i v-show="muted" @click="changemuted"
-					class="active:scale-90 duration-300 fa fa-volume-up text-indigo-600 text-3xl"></i>
+					class="pr-2 active:scale-90 duration-300 fa fa-volume-mute  text-indigo-600 text-3xl"></i>
+
+				<i v-show="listen" @click="listenWrite(), listen = !listen"
+					class="active:scale-90 duration-300 fa fa-microphone text-indigo-600 text-3xl"></i>
+
+				<i v-show="!listen" @click="listen = !listen"
+					class="active:scale-90 duration-300 fa fa-microphone-slash  text-indigo-600 text-3xl"></i>
 			</span>
 		</section>
 	</main>
@@ -27,9 +31,12 @@
 
 <script>
 import BallonChat from '@/components/BallonChat.vue'
+var recognition = new webkitSpeechRecognition();
+
 export default {
 	data() {
 		return {
+			listen: true,
 			textField: '',
 			muted: false,
 			isLoading: true,
@@ -51,7 +58,6 @@ export default {
 	},
 
 	mounted() {
-
 		setTimeout(async () => {
 			this.initialchat(this.user)
 		}, 500)
@@ -67,6 +73,21 @@ export default {
 	},
 
 	methods: {
+		listenWrite() {
+			try {
+				let sr = new webkitSpeechRecognition();
+				sr.onresult = resultado => {
+					this.textField = resultado.results[0][0].transcript
+					this.listen = !this.listen
+				}
+				sr.start();
+			}
+			catch (e) {
+				console.error(e);
+				$('.no-browser-support').show();
+				$('.app').hide();
+			}
+		},
 		async initialchat(payload) {
 			if (payload.idUser == 0) {
 				console.log('a')
@@ -101,7 +122,6 @@ export default {
 					id: 1
 				})
 			}
-			console.log(result)
 		},
 		changemuted() {
 			this.muted = !this.muted
