@@ -4,7 +4,7 @@
 	<main class="fixed bottom-0 left-0 right-0">
 		<section class="bg-primary items-center p-5 px-5 flex justify-evenly">
 			<div class="w-10/12 text-gray-100 bg-secondary px-3 py-1 flex items-center rounded-xl">
-				<textarea rows="2" v-model="textField" type="text" placeholder="Your message"
+				<textarea rows="2" v-model="textField" type="text" placeholder="Escriba su mensaje"
 					class="bg-secondary w-full px-2 py-1 rounded-xl"></textarea>
 			</div>
 			<span>
